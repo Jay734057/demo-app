@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- <script src="http://localhost:3000/moula-checkout.js"></script> -->
+    <script src="https://checkout-widget-sbox.moula.com.au/moula-checkout.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        window.addEventListener("message", (event) => {
+            if (event.data["modal"])
+                document.getElementById("moulaModal").style.display = event.data["modal"];
+            if (event.data["response"])
+                document.getElementById("response").innerHTML = event.data["response"];
+        }, false);  
+    </script>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-8 order-md-1 mb-4">
+                <h4 class="d-flex justify-content-between align-items-center mb-3">
+                    <span>Your cart</span>
+                    <span class="badge badge-secondary badge-pill">2</span>
+                </h4>
+                <ul class="list-group mb-3">
+                    <li class="list-group-item d-flex justify-content-between lh-condensed">
+                        <div>
+                            <h6 class="my-0">Grapes</h6>
+                            <small class="text-muted">10kg of apple</small>
+                        </div>
+                        <span class="text-muted">$300</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between lh-condensed">
+                        <div>
+                            <h6 class="my-0">Apple</h6>
+                            <small class="text-muted">20kg of grapes</small>
+                        </div>
+                        <span class="text-muted">$200</span>
+                    </li>
+                </ul>
+                <hr>
+                <div class="col-md-4 float-right">
+                    <div class="float-right">
+                        <h5 class="mb-2">Sub-Total</h5>
+                        <h6 class="float-right">$500</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 order-md-2">
+                <div>
+                    <div id="moulaIframeInputPayloadContainer" class="row">
+                        <div class="col-md-12 mb-3">
+                            <h4 class="">Moula Pay</h4>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label>Merchant Id</label>
+                            <input type="text" class="form-control" id="moulaIframeMerchantId" placeholder="" value="">
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label>Merchant Location Id</label>
+                            <input type="text" class="form-control" id="moulaIframeMerchantLocationId" placeholder=""
+                                value="">
+                        </div>
+                    </div>
+                    <div id="moulaEcommApiInputPayloadContainer" class="row">
+                        <div class="col-md-12 mb-3">
+                            <label>Payment Transaction Reference</label>
+                            <input type="text" class="form-control" id="paymentTransactionReference" placeholder=""
+                                value="">
+                        </div>
+                        <!-- <div class="col-md-12 mb-3">
+                            <button id="createPaymentReference" class="btn btn-secondary btn-block">
+                                Create Payment
+                            </button>
+                        </div> -->
+                        <div class="col-md-12 mb-3">
+                            <button id="checkout" class="btn btn-primary btn-block" onclick="checkout('ecomm-iframe')">
+                                Moula Iframe Checkout
+                            </button>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <button id="checkout" class="btn btn-primary btn-block" onclick="checkout('ecomm-api')">
+                                Moula Api Checkout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <br />
+        <div class="row">
+            <label><b>Response</b></label>
+            <br />
+            <pre id="response">
+            </pre>
+        </div>
+    </div>
+
+
+
+</body>
+
+<style>
+    .container {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center
+    }
+
+    .button {
+        width: 200px;
+    }
+
+    .textarea {
+        width: 600px;
+        height: 600px;
+    }
+
+    .label {
+        font-size: xx-large;
+    }
+
+    .divResponse {
+        white-space: pre;
+        font-family: monospace;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        //moula iframe
+        $("#moulaIframeMerchantId").val("44301812-41a3-45d4-8b3c-e45addcaa0bd");
+        $("#moulaIframeMerchantLocationId").val("1a40ba6e-aada-4c36-8a5c-071007348dc7");
+    });
+    //create payment reference
+    $(document).ready(function () {
+        $("#createPaymentReference").click(function () {
+            var payload = {
+                merchantId: $("#moulaIframeMerchantId").val(),
+                merchantLocationId: $("#moulaIframeMerchantLocationId").val(),
+                promotionalOfferId: "8909a2e1-8d7d-40dc-8b39-35fa922aaeed",
+                transactionAmount: {
+                    amount: "500",
+                    currencyCode: "AUD"
+                },
+                paymentAmount: {
+                    amount: "500",
+                    currencyCode: "AUD"
+                },
+                envInfo: {
+                    clientIp: "string1",
+                    merchantAppversion: "string2",
+                    osType: "string3",
+                    terminalType: "string4",
+                    storeTerminalId: "string5",
+                    websiteLanguage: "string6",
+                    clientKey: "string7"
+                },
+                orderItems: [
+                    {
+                        referenceItemId: "test",
+                        itemName: "test1",
+                        itemCategory: "test",
+                        unitPrice: {
+                            amount: 250,
+                            currencyCode: "AUD"
+                        },
+                        itemQuantity: 1
+                    },
+                    {
+                        referenceItemId: "test",
+                        itemName: "test",
+                        itemCategory: "test",
+                        unitPrice: {
+                            amount: 300,
+                            currencyCode: "AUD"
+                        },
+                        itemQuantity: 1
+                    }
+                ],
+                merchantChannel: 1,
+                merchantMcc: createGuid(),
+                extendInfo: createGuid(),
+                merchantSalesConsultant: createGuid(),
+                transactionDescription: "Moula Ecomm Api Test"
+            };
+            $.ajax({
+                url: 'https://mla-sandbox-apim.azure-api.net/merchantpayment/api/v1/payment/request/paymentorder',
+                type: 'post',
+                data: JSON.stringify(payload),
+                headers: {
+                    "accept": "text/plain",
+                    "origin": "https://checkout-widget-sbox.moula.com.au",
+                    "x-request-id": createGuid(),
+                    "x-request-time": new Date().toUTCString(),
+                    "x-api-key": "27c96b4601cd4b1689292302e7adc6a1",
+                    "x-client-id": "0oa7nsmenHfvuswLA696",
+                    "x-signature": "dGVzdA==",
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer eyJraWQiOiIzWXVKTExTcnctSmdrcm5kS3BaRFY3VlJKS2t1czZJbFpsa1F0M0lfakN3IiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULlgybVB0RFdJR051a1Y3cDhLZ3k0QzhQVW1wTmpHYzdScXhZMjJzcGtWcFkiLCJpc3MiOiJodHRwczovL21vdWxhLWxvZ2luLXVhdC5va3RhLmNvbS9vYXV0aDIvYXVzYnl1eGJubEpiWWlhczE2OTUiLCJhdWQiOiJhcGk6Ly9kZWZhdWx0IiwiaWF0IjoxNjYwNTQwNzU5LCJleHAiOjE2NjA1NDQzNTksImNpZCI6IjBvYTduc21lbkhmdnVzd0xBNjk2IiwidWlkIjoiMDB1ZDA5dWFyUTBkWmNYRTI2OTYiLCJzY3AiOlsib3BlbmlkIiwiZWNvbW0tY2hlY2tvdXQiXSwiYXV0aF90aW1lIjoxNjYwNTQwNzU2LCJzdWIiOiJ0ZXN0X3Nib3hfMDdAZW1haWwuZ2hvc3RpbnNwZWN0b3IuY29tIiwic2VjdXJpdHktY29udGV4dCI6eyJ1c2VySWQiOiJhY2IzNGRkMS0wMDZiLTQ3ZDQtOGRiZC1iMTFkNjBhMjQ1ZWMiLCJyb2xlcyI6W3sicm9sZSI6Ik1vdWxhIFVzZXIiLCJyb2xlSWQiOjF9XSwiYWxsb3dlZElkcyI6W3sidHlwZW5hbWUiOiJVc2VyIiwiaWQiOiJhY2IzNGRkMS0wMDZiLTQ3ZDQtOGRiZC1iMTFkNjBhMjQ1ZWMifSx7InR5cGVuYW1lIjoiRmFjaWxpdHkgTW91bGEgUGF5IiwiaWQiOiIwMmI0YjU2ZC1kNDVlLTQ4ZGEtODFlNi04ZWQ2ZDA3ZWE1NTYifSx7InR5cGVuYW1lIjoiRW50aXR5IiwiaWQiOiJlMTgxNzc1Yi05YTNiLTRhZTEtOTc0ZC0zNGJlM2IyNmFjYjYifV19fQ.bVatbYUjBPHgqIjhIAltFJNID-xt0c9LZCGVB5bkY6T4R-Upr0W9dodJNlmxPWbGXpO--vNmCoe3V3wcJQ7k4f2vQYPQG__sYnh_pzgjWnt17rMk5GjvwXeHRAW2B4J1QStNyFpq64UtbEWSG7wdUrLC4zGUPpevl-GGLLkPnjyE_zpi96OUm4v15WknTbhYq3V7HoP3ORGtxwoi5d5VkUJ-3Ox-crcJPaANItAT87xBEvfsxxKGlfJmlRkxXLmQznQYa2Vw-PNt2W5YoY2mHVgfnvV0vul55KtbGdhW5NUsetPprQLUNiqZ_okryuU11f2jtxKfgSdxFreJyddo5Q",
+                },
+                dataType: 'json',
+                success: function (data) {
+                    $("#paymentTransactionReference").val(data["paymentTransactionReference"]);
+                }
+            });
+        });
+    })
+    const createGuid = () => {
+        function _p8(s) {
+            var p = (Math.random().toString(16) + "000000000").substr(2, 8);
+            return s ? "-" + p.substr(0, 4) + "-" + p.substr(4, 4) : p
+        }
+        return _p8() + _p8(true) + _p8(true) + _p8();
+    };
+
+    const checkout = (pattern) => {
+        document.getElementById("response").innerHTML = "";
+        switch (pattern) {
+            case "ecomm-iframe":
+                const moulaIframePayload = {
+                    merchantId: $("#moulaIframeMerchantId").val(),
+                    merchantLocationId: $("#moulaIframeMerchantLocationId").val(),
+                    promotionalOfferId: "8909a2e1-8d7d-40dc-8b39-35fa922aaeed",
+                    transactionAmount: {
+                        amount: "500",
+                        currencyCode: "AUD"
+                    },
+                    paymentAmount: {
+                        amount: "500",
+                        currencyCode: "AUD"
+                    },
+                    envInfo: {
+                        clientIp: "string1",
+                        merchantAppversion: "string2",
+                        osType: "string3",
+                        terminalType: "string4",
+                        storeTerminalId: "string5",
+                        websiteLanguage: "string6",
+                        clientKey: "string7"
+                    },
+                    orderItems: [
+                        {
+                            referenceItemId: "test",
+                            itemName: "test1",
+                            itemCategory: "fruits",
+                            unitPrice: {
+                                amount: 300,
+                                currencyCode: "AUD"
+                            },
+                            itemQuantity: 1
+                        },
+                        {
+                            referenceItemId: "test",
+                            itemName: "Apple",
+                            itemCategory: "fruits",
+                            unitPrice: {
+                                amount: 200,
+                                currencyCode: "AUD"
+                            },
+                            itemQuantity: 1
+                        }
+                    ],
+                    merchantChannel: 1,
+                    merchantMcc: "string",
+                    extendInfo: "string",
+                    merchantSalesConsultant: "string",
+                    transactionDescription: "description"
+                };
+                console.log('----------------------------------')
+                console.log(moulaIframePayload);
+                moulaCheckout(JSON.stringify(moulaIframePayload), pattern);
+                break;
+            case "ecomm-api":
+                const moulaApiPayload = {
+                    paymentTransactionReference: $("#paymentTransactionReference").val(),
+                    merchantId: $("#moulaIframeMerchantId").val(),
+                    merchantLocationId: $("#moulaIframeMerchantLocationId").val()
+                }
+                console.log('----------------------------------')
+                console.log(moulaApiPayload);
+                moulaCheckout(JSON.stringify(moulaApiPayload), pattern);
+                break;
+        }
+        // moulaCheckout(document.getElementById('payload').value, pattern);
+    }
+</script>
+
+</html>
